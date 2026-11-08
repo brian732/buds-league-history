@@ -1,5 +1,5 @@
 
-const CONFIG_URL = 'data/league.json?v=20261107-tabs';
+const CONFIG_URL = 'data/league.json?v=20261107-photos';
 const CACHE_PREFIX = 'espn-436050287:v3:';
 
 

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261107-tabs">
+<link rel="stylesheet" href="styles.css?v=20261107-photos">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
 </head>
 <body>
@@ -24,12 +24,15 @@
         <p class="est" id="league-est">est. 2021</p>
       </div>
     </div>
+    <div class="mast-actions">
+    <button type="button" class="vault-launch" data-open-vault aria-haspopup="dialog"><span aria-hidden="true">📸</span> Buds Vault</button>
     <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle colour theme" title="Toggle light / dark">
       <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
         <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/>
         <path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/>
       </svg>
     </button>
+    </div>
   </div>
   <nav class="tabs wrap" id="tabs" aria-label="Sections">
     <button data-tab="now"      class="active">This Season</button>
@@ -182,14 +185,30 @@
   </section>
 </main>
 
+<aside class="wrap vault-teaser" aria-labelledby="vaultTeaserTitle">
+  <div class="vault-teaser-photos" aria-hidden="true"><img src="assets/vault/memory-04.jpg" width="1280" height="960" alt="" loading="lazy"><img src="assets/vault/memory-02.jpg" width="1512" height="2016" alt="" loading="lazy"></div>
+  <div><p class="vault-eyebrow">Off the field</p><h2 id="vaultTeaserTitle">The Buds Vault</h2><p>4 photos</p><button type="button" class="quiet-btn" data-open-vault aria-haspopup="dialog">Open the photo vault <span aria-hidden="true">↗</span></button></div>
+</aside>
+
+<dialog id="budsVault" class="vault-dialog" aria-labelledby="vaultTitle">
+  <div class="vault-shell">
+    <header class="vault-heading"><div><h2 id="vaultTitle">Buds Vault</h2></div><button type="button" id="closeVault" class="quiet-btn vault-close" aria-label="Close photo vault" autofocus>✕</button></header>
+    <figure class="vault-main"><div class="vault-photo-stage"><img id="vaultPhoto" src="assets/vault/memory-04.jpg" width="1280" height="960" alt="Friends gathered for a group photo on a deck at night."></div><figcaption><span id="vaultCounter" class="vault-eyebrow">1 / 4</span></figcaption></figure>
+    <div class="vault-controls"><button type="button" id="vaultPrevious" class="quiet-btn" aria-label="Previous photo">← <span>Previous</span></button><button type="button" id="vaultShuffle" class="vault-shuffle">Shuffle photos <span aria-hidden="true">⤨</span></button><button type="button" id="vaultNext" class="quiet-btn" aria-label="Next photo"><span>Next</span> →</button></div>
+    <div id="vaultThumbnails" class="vault-thumbnails" aria-label="Choose a photo"></div>
+    <p id="vaultAnnouncement" class="vault-sr" role="status" aria-live="polite"></p>
+  </div>
+</dialog>
+
 <footer class="wrap">
   <p id="footNote"></p>
   <p class="tiny">This is a living document. Personalize the site in My view. Add league stories at the Commissioner’s desk. Standings and records come from ESPN.</p>
 </footer>
 
-<script src="explorer.js?v=20261107-tabs"></script>
-<script src="preferences.js?v=20261107-tabs"></script>
-<script src="editor.js?v=20261107-tabs"></script>
-<script src="app.js?v=20261107-tabs"></script>
+<script src="explorer.js?v=20261107-photos"></script>
+<script src="preferences.js?v=20261107-photos"></script>
+<script src="editor.js?v=20261107-photos"></script>
+<script src="app.js?v=20261107-photos"></script>
+<script src="vault.js?v=20261107-photos"></script>
 </body>
 </html>

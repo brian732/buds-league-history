@@ -19,6 +19,10 @@ Tom Ribaudo owned team 2 in 2021, and Jacob Lavigne took over in 2022. The user 
 
 The ownership policy is explicit in `scripts/ownership-policy.json`; do not transfer the excluded owner's games to Jacob or change the policy based on reused team IDs. No account aliases are inferred from team names.
 
+## Photo vault
+
+The visible Buds Vault button in the header and the photo teaser near the footer open a four-photo gallery. Images live in `assets/vault/`; `vault.js` provides next/previous, shuffle, thumbnail selection, arrow keys, Escape and focus return. The gallery has no photo captions. HEIC originals were converted to browser-compatible JPEGs, with metadata omitted.
+
 ## Data maintenance
 
 The ESPN league is private. The site uses imported data, and does not contain ESPN cookies, credentials, notifications, player rosters or account contact information. It does not refresh private ESPN data unattended. Commissioner history, fees, payouts and punishments are unrecorded until supplied.
