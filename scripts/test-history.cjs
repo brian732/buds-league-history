@@ -41,5 +41,10 @@ context.config=data;context.archive=archive;context.post=post;
  assert.equal(totals.reduce((n,r)=>n+r.w,0),360);assert.equal(totals.reduce((n,r)=>n+r.l,0),357);
  assert.equal(vm.runInContext('H2H_COVERAGE.reduce((n,r)=>n+r.excluded,0)',context),13);
  for(const g of post.games){assert(g.endWeek>g.week);const s=archive.seasons.find(s=>s.year===g.year);assert([g.a,g.b].every(id=>s.teams.find(t=>t.ownerId===id).playoffSeed<=4));}
+ // A tab that previously visited the original league must not reuse its cached fixtures.
+ const oldLeagueCache=new Map([['v2:data/playoffs.json',JSON.stringify({at:Date.now(),data:{games:[{source:'other league'}]}})]]);
+ context.sessionStorage={getItem:key=>oldLeagueCache.get(key)||null,setItem:(key,value)=>oldLeagueCache.set(key,value)};
+ const fetched=await vm.runInContext('getJSON("data/playoffs.json")',context);assert.equal(fetched.games.length,20);
+ assert([...oldLeagueCache.keys()].some(key=>key.startsWith('espn-436050287:')));
  console.log('History passed: 365 overall games, 352 listed-owner H2H games, 20 playoff series; excluded 2021 owner reconciled; Jacob GP=60, nine others GP=73; all filters and zero-title rows');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -1,5 +1,6 @@
 
-const CONFIG_URL = 'data/league.json?v=20261107-public';
+const CONFIG_URL = 'data/league.json?v=20261107-public2';
+const CACHE_PREFIX = 'espn-436050287:v3:';
 
 
 let DATA = null;      // league.json
@@ -22,13 +23,13 @@ const fmt = n => Number(n).toFixed(2);
 async function getJSON(url) {
   // Expire live data after five minutes; ignore the old unbounded cache.
   try {
-    const cached = url === CONFIG_URL ? null : JSON.parse(sessionStorage.getItem('v2:' + url));
+    const cached = url === CONFIG_URL ? null : JSON.parse(sessionStorage.getItem(CACHE_PREFIX + url));
     if (cached && Date.now() - cached.at < 5 * 60 * 1000) return cached.data;
   } catch (e) { /* storage unavailable or stale format */ }
   const r = await fetch(url, { cache: url === CONFIG_URL ? 'no-store' : 'no-cache', signal: AbortSignal.timeout(12000) });
   if (!r.ok) throw new Error(url + ' -> ' + r.status);
   const j = await r.json();
-  try { if (url !== CONFIG_URL) sessionStorage.setItem('v2:' + url, JSON.stringify({ at: Date.now(), data: j })); } catch (e) { /* quota; fine */ }
+  try { if (url !== CONFIG_URL) sessionStorage.setItem(CACHE_PREFIX + url, JSON.stringify({ at: Date.now(), data: j })); } catch (e) { /* quota; fine */ }
   return j;
 }
 
