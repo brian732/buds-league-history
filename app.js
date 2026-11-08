@@ -1,5 +1,5 @@
 
-const CONFIG_URL = 'data/league.json?v=20261107-public2';
+const CONFIG_URL = 'data/league.json?v=20261107-tabs';
 const CACHE_PREFIX = 'espn-436050287:v3:';
 
 
@@ -496,6 +496,7 @@ function renderRecords() {
    RULEBOOK
    ============================================================ */
 function renderRules() {
+  if (!$('#rulesBody')) return;
   const R = DATA.rules || {};
   let html = '';
 
@@ -534,6 +535,7 @@ function renderFooter() {
    ============================================================ */
 function initTabs() {
   const go = name => {
+    if (!$('#tab-' + name)) name = 'now';
     $$('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
     $$('.tab').forEach(t => t.classList.toggle('active', t.id === 'tab-' + name));
     if (location.hash.slice(1) !== name) history.replaceState(null, '', '#' + name);
@@ -545,10 +547,10 @@ function initTabs() {
   });
   window.switchLeagueTab = go;
   const h = location.hash.slice(1);
-  if (h && $('#tab-' + h)) go(h);
+  go(h || 'now');
   window.addEventListener('hashchange', () => {
     const n = location.hash.slice(1);
-    if (n && $('#tab-' + n)) go(n);
+    go(n || 'now');
   });
 }
 
@@ -643,6 +645,7 @@ function renderHeadToHeadDetail() {
 
 /* Written terms are kept in league.json, separate from the editing desk. */
 function renderCommissionerHistory() {
+  if (!$('#commissionerHistory')) return;
   if (!(DATA.league.commissionerHistory || []).length) { $('#commissionerHistory').innerHTML='<p class="loading">Commissioner history has not been recorded yet.</p>'; return; }
   $('#commissionerHistory').innerHTML = (DATA.league.commissionerHistory || []).map(term => {
     const owner = DATA.owners.find(o => o.name === term.name);

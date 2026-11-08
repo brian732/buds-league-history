@@ -4,7 +4,7 @@ Public history site for ESPN fantasy football league **436050287**.
 
 **Website:** https://brian732.github.io/buds-league-history/
 
-Uses the original league site's design and features: standings, trophies, all-time records, sortable/filterable regular-season and playoff records, full head-to-head matrix, rivalry comparison and game log, owners, seasons, record book, rulebook, commissioner history, personal appearance settings, shared photos, and editing of profiles/recaps/awards.
+Uses the original league site's design and features: standings, trophies, all-time records, sortable/filterable regular-season and playoff records, full head-to-head matrix, rivalry comparison and game log, owners, seasons, record book, personal appearance settings, shared photos, and editing of profiles/recaps/awards.
 
 ## Verified coverage and ownership
 
