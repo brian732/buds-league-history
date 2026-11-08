@@ -1,0 +1,31 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const root=__dirname+'/../',data=JSON.parse(fs.readFileSync(root+'data/league.json'));
+const nodes=new Map(),node=s=>{if(!nodes.has(s))nodes.set(s,{value:'',innerHTML:'',textContent:'',disabled:false,remove(){}});return nodes.get(s)};
+const ctx=vm.createContext({console,TextEncoder,TextDecoder,Uint8Array,btoa:s=>Buffer.from(s,'binary').toString('base64'),atob:s=>Buffer.from(s,'base64').toString('binary'),document:{querySelector:node,querySelectorAll:()=>[]},sessionStorage:{removeItem(){}},localStorage:{removeItem(){},getItem:()=>null,setItem(){}}});
+for(const file of ['preferences.js','editor.js','app.js'])vm.runInContext(fs.readFileSync(root+file,'utf8').replace(/\(async function init\(\) \{[\s\S]*?\}\)\(\);/,''),ctx);
+ctx.data=data;
+const run=code=>vm.runInContext(code,ctx),json=code=>JSON.parse(run('JSON.stringify('+code+')'));
+(async()=>{run('DATA=cloneContent(data)');
+ ctx.id=data.owners[0].ownerId;
+ run("PUBLISHED_DATA=cloneContent(DATA);EDITOR_DRAFT=emptyDraft();EDITOR_DRAFT.owners[id]={bio:'Unicode 🏈 preview <script>text</script>'};");
+ ctx.sharedPhoto='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jGZkAAAAASUVORK5CYII=';
+ run('EDITOR_DRAFT.owners[id].photo=sharedPhoto');
+ const withPhoto=json('validateDraft(EDITOR_DRAFT,PUBLISHED_DATA)');assert.equal(withPhoto.owners[data.owners[0].ownerId].photo,ctx.sharedPhoto);
+ run('PREFERENCES.photos={[id]:"https://example.com/old-local-override.jpg"}');
+ assert(run('ownerAvatar({...DATA.owners[0],photo:sharedPhoto})').includes(ctx.sharedPhoto));assert(!run('ownerAvatar({...DATA.owners[0],photo:sharedPhoto})').includes('old-local-override'));
+ assert.throws(()=>run('validateDraft({owners:{[id]:{photo:"data:image/svg+xml;base64,PHN2Zz4="}},seasons:{}},PUBLISHED_DATA)'),/HTTPS/);
+ assert.throws(()=>run('validateDraft({owners:{[id]:{photo:"data:image/jpeg;base64,"+"A".repeat(100001)}},seasons:{}},PUBLISHED_DATA)'),/too long/);
+
+ const patched=json('applyDraft(PUBLISHED_DATA,validateDraft(EDITOR_DRAFT,PUBLISHED_DATA))');assert.equal(patched.owners[0].bio,'Unicode 🏈 preview <script>text</script>');assert.equal(patched.owners[0].ownerId,data.owners[0].ownerId);
+ assert.equal(run("decodeGitHubContent(encodeGitHubContent({text:'🏈 Buds League'})).text"),'🏈 Buds League');
+ run('latest=cloneContent(PUBLISHED_DATA);latest.league.entryFee="$300";');assert.equal(json('mergePublishedDraft(latest,PUBLISHED_DATA,EDITOR_DRAFT)').league.entryFee,'$300');
+ run('latest.owners[0].bio="Changed elsewhere"');assert.throws(()=>run('mergePublishedDraft(latest,PUBLISHED_DATA,EDITOR_DRAFT)'),/changed on GitHub/);
+ assert.throws(()=>run("validateDraft({owners:{[id]:{photo:'javascript:alert(1)'}},seasons:{}},PUBLISHED_DATA)"),/HTTPS/);
+ assert.throws(()=>run("validateDraft({owners:{},seasons:{2026:{recap:'',awards:[{award:'',winner:''}]}}},PUBLISHED_DATA)"),/name and winner/);
+ const protectedContent=json("applyDraft(PUBLISHED_DATA,validateDraft({owners:{[id]:{bio:'New',ownerId:'bad',team:'bad'}},seasons:{}},PUBLISHED_DATA))");assert.equal(protectedContent.owners[0].team,data.owners[0].team);assert.equal(protectedContent.owners[0].ownerId,data.owners[0].ownerId);
+ // Exercise the real publishing flow against a fake GitHub transport, never a live write.
+ run('captureEditorFields=()=>{};fillEditorFields=()=>{};repaintEditableContent=()=>{};PREVIEWED_DRAFT=JSON.stringify(EDITOR_DRAFT);');
+ const writes=[];ctx.fetch=async(url,options)=>{assert(url.startsWith('https://api.github.com/repos/brian732/buds-league-history/contents/data/league.json'));assert.equal(options.headers.Authorization,'Bearer test-token');if(options.method==='PUT'){writes.push(JSON.parse(options.body));return{ok:true,json:async()=>({commit:{sha:'fixture'}})}}return{ok:true,json:async()=>({sha:'base-sha',content:Buffer.from(JSON.stringify(data)).toString('base64')})}};
+ node('#publishToken').value='test-token';await run('publishEditorDraft({preventDefault(){}})');assert.equal(node('#publishToken').value,'');assert.equal(writes.length,1);assert.equal(writes[0].sha,'base-sha');assert.equal(writes[0].branch,'main');const sharedWrite=JSON.parse(Buffer.from(writes[0].content,'base64').toString('utf8'));assert.equal(sharedWrite.owners[0].photo,ctx.sharedPhoto);ctx.freshOwner=sharedWrite.owners[0];run('PREFERENCES.photos={}');assert(run('ownerAvatar(freshOwner)').includes(ctx.sharedPhoto));assert(node('#publishStatus').innerHTML.includes('Published to GitHub'));
+ console.log('Shared editing passed: validation, Unicode, protected records, concurrent edit conflicts, shared photo on fresh device, token clearing, authorized GitHub publishing');
+})().catch(e=>{console.error(e);process.exit(1)});

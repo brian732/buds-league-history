@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buds League</title>
+<meta name="description" content="The official record of Buds League — standings, history, owners, and the rulebook.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20261107-public">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap mast-inner">
+    <div class="mast-id">
+      <div class="crest" aria-hidden="true">🏆</div>
+      <div>
+        <h1 id="league-name">Buds League</h1>
+        <p class="est" id="league-est">est. 2021</p>
+      </div>
+    </div>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle colour theme" title="Toggle light / dark">
+      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+        <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+  <nav class="tabs wrap" id="tabs" aria-label="Sections">
+    <button data-tab="now"      class="active">This Season</button>
+    <button data-tab="trophies">Trophy Case</button>
+    <button data-tab="alltime">All-Time</button>
+    <button data-tab="owners">Owners</button>
+    <button data-tab="commissioner-history">Commissioner History</button>
+    <button data-tab="seasons">Seasons</button>
+    <button data-tab="records">Record Book</button>
+    <button data-tab="rules">Rulebook</button>
+    <button data-tab="settings">My view</button>
+    <button data-tab="commissioner">Commissioner’s desk</button>
+  </nav>
+</header>
+
+<main id="main" class="wrap">
+
+  <!-- THIS SEASON -->
+  <section id="tab-now" class="tab active">
+    <div class="live-head">
+      <h2 id="nowTitle">Live Standings</h2>
+      <span class="badge" id="liveBadge">Loading ESPN history…</span>
+    </div>
+    <div id="personalHome"></div>
+    <div id="nowStandings" class="loading">Fetching live data…</div>
+    <div class="grid-2" style="margin-top:2.5rem">
+      <div class="card">
+        <h3>League Info</h3>
+        <dl class="kv" id="infoList"></dl>
+      </div>
+      <div class="card">
+        <h3>Payouts</h3>
+        <dl class="kv" id="payoutList"></dl>
+        <h3 style="margin-top:1.75rem">Loser's Punishment</h3>
+        <div id="punishList" class="punish"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TROPHY CASE -->
+  <section id="tab-trophies" class="tab">
+    <h2>Trophy Case</h2>
+    <p class="lede">Six seasons. Five different champions.</p>
+    <div id="trophyGrid" class="trophy-grid"></div>
+    <h3 class="sub">Championship Appearances</h3>
+    <div id="champTable"></div>
+    <h3 class="sub">Playoff Appearances</h3>
+    <div id="playoffTable"></div>
+  </section>
+
+  <!-- ALL TIME -->
+  <section id="tab-alltime" class="tab">
+    <h2>All-Time Standings</h2>
+    <p class="lede">Explore the league's history. Pick your seasons, choose a competition, and settle a rivalry.</p>
+    <form id="explorerFilters" class="explorer-bar" aria-label="History filters">
+      <label>Seasons<select aria-label="Seasons" id="seasonPreset"><option value="all">All-time</option><option value="single">One season</option><option value="range">Year range</option></select></label>
+      <label id="fromYearLabel" hidden>From<select aria-label="From" id="fromYear"></select></label>
+      <label id="toYearLabel" hidden>To<select aria-label="To" id="toYear"></select></label>
+      <label>Competition<select aria-label="Competition" id="competition"><option value="regular">Regular season</option><option value="playoffs">Playoffs</option><option value="combined">Regular season + playoffs</option></select></label>
+      <label>Rank standings by<select aria-label="Rank standings by" id="standingsSort"><option value="pct">Win percentage</option><option value="gp">Games played</option><option value="w">Wins</option><option value="pf">Points scored</option><option value="titles">Titles</option><option value="berths">Playoff appearances</option><option value="l">Losses</option><option value="t">Ties</option><option value="pa">Points allowed</option><option value="seasons">Seasons played</option><option value="name">Owner name</option></select></label>
+      <button type="button" id="resetExplorer" class="quiet-btn">Reset filters</button>
+    </form>
+    <p class="tiny" id="filterSummary" role="status"></p>
+    <p class="tiny" id="standingsMethod"></p>
+    <div id="allTimeTable" class="loading">Calculating…</div>
+    <h3 class="sub" id="headtohead">Head-to-Head Records</h3>
+    <p class="lede" id="h2hCoverage" role="status">Loading verified matchup history…</p>
+    <p class="tiny">Source: <a href="https://fantasy.espn.com/football/league?leagueId=436050287" target="_blank" rel="noopener">ESPN league 436050287</a>.</p>
+    <p class="tiny">Each cell shows the row owner's W–L–T against the column owner for your filters. Playoffs include championship-bracket and third-place series; consolation games are excluded. Multiweek series count once.</p>
+
+    <div id="h2hMatrix" class="loading">Calculating matchups…</div>
+    <div class="h2h-controls">
+      <label for="h2hOwner">View an owner's matchups</label>
+      <select id="h2hOwner"></select>
+    </div>
+    <div id="h2hDetail"></div>
+    <h3 class="sub">Season by Season</h3>
+    <div id="gridHistory" class="loading"></div>
+    <section class="rivalry" aria-labelledby="rivalryTitle">
+      <h3 id="rivalryTitle">Settle a rivalry</h3>
+      <div class="rivalry-picks"><label>First owner<select aria-label="First owner" id="compareA"></select></label><span aria-hidden="true">vs.</span><label>Second owner<select aria-label="Second owner" id="compareB"></select></label></div>
+      <div id="comparisonSummary" aria-live="polite"></div>
+      <details id="comparisonGames"><summary>Game-by-game history</summary><div id="comparisonHistory"></div></details>
+    </section>
+  </section>
+
+  <!-- OWNERS -->
+  <section id="tab-owners" class="tab">
+    <h2>Owners</h2>
+    <p class="lede">The current and former owners behind every season.</p>
+    <div id="ownerGrid" class="owner-grid"></div>
+    <h3 class="sub">Former &amp; Honorary</h3>
+    <div id="formerList" class="former"></div>
+  </section>
+
+  <section id="tab-commissioner-history" class="tab">
+    <h2>Commissioner History</h2>
+    <p class="lede">The people who have led this league.</p>
+    <ol id="commissionerHistory" class="commissioner-history"></ol>
+  </section>
+
+  <!-- SEASONS -->
+  <section id="tab-seasons" class="tab">
+    <h2>Season Archive</h2>
+    <div class="year-nav" id="yearNav"></div>
+    <div id="seasonBody"></div>
+  </section>
+
+  <!-- RECORDS -->
+  <section id="tab-records" class="tab">
+    <h2>Record Book</h2>
+    <p class="lede">Records verified against ESPN season and matchup history.</p>
+    <div id="recordList" class="record-list"></div>
+  </section>
+
+  <!-- RULES -->
+  <section id="tab-rules" class="tab">
+    <h2>Rules &amp; Regulations</h2>
+    <p class="lede">For member-owners of Buds League.</p>
+    <div id="rulesBody"></div>
+  </section>
+
+  <section id="tab-settings" class="tab">
+    <h2>Make it your league</h2>
+    <p class="lede">Your team. Your colors. Your starting point. These preferences stay on this device; profile photos are shared with the league.</p>
+    <form id="preferencesForm" class="settings-form">
+      <label>My team<select aria-label="My team" id="favoriteOwner"><option value="">Choose your team</option></select></label>
+      <label>Open the site to<select aria-label="Open the site to" id="homeSection"><option value="now">This season</option><option value="alltime">All-time records</option><option value="owners">Owners</option></select></label>
+      <label>Table style<select aria-label="Table style" id="tableDensity"><option value="detailed">Detailed</option><option value="compact">Compact</option></select></label>
+      <label>Theme<select aria-label="Theme" id="preferredTheme"><option value="system">Follow device</option><option value="dark">Dark</option><option value="light">Light</option></select></label>
+      <label>Accent<select aria-label="Accent" id="accentChoice"><option value="gold">League gold</option><option value="blue">Touchdown blue</option><option value="green">Field green</option><option value="red">Rivalry red</option><option value="purple">Royal purple</option></select></label>
+      <label>My team color<input aria-label="My team color" id="personalTeamColor" type="color" value="#e3b23c"></label>
+      <div class="shared-photo-settings"><h3>League profile photo</h3><div id="sharedPhotoSummary"></div><p class="tiny">Upload and publish a photo at the Commissioner’s desk so everyone sees the same picture.</p><div class="form-actions"><button type="button" id="editSharedPhoto" class="quiet-btn">Change league profile photo</button><button type="button" id="migrateLocalPhoto" class="quiet-btn" hidden>Use my previously saved photo</button></div></div>
+      <div class="form-actions"><button type="submit" class="primary-btn">Save my view</button><button type="button" id="resetPreferences" class="quiet-btn">Reset my view</button></div>
+      <p id="preferencesStatus" role="status"></p>
+    </form>
+  </section>
+  <section id="tab-commissioner" class="tab">
+    <h2>Commissioner's desk</h2>
+    <p class="lede">Write the next chapter. Update owner profiles, season recaps, and awards.</p>
+    <p class="tiny">Drafts and previews stay on this device. Publishing updates the shared site for everyone and requires repository write access.</p>
+    <form id="editorForm" class="editor-form">
+      <fieldset><legend>Owner profile</legend>
+        <label>Owner<select aria-label="Owner" id="editOwner"></select></label>
+        <label>Display team name<input aria-label="Display team name" id="editTeamName" maxlength="100"></label>
+        <label>Bio<textarea aria-label="Bio" id="editBio" rows="5" maxlength="6000"></textarea></label>
+        <div class="shared-photo-editor"><div id="editPhotoPreview"></div><label>Upload league profile photo<input aria-label="Upload league profile photo" id="editPhotoUpload" type="file" accept="image/png,image/jpeg,image/webp"><span class="tiny">PNG, JPEG, or WebP, up to 10 MB. Photos are resized for the shared site.</span></label><button type="button" id="removeSharedPhoto" class="quiet-btn">Remove league photo</button></div>
+        <label>Photo URL<input aria-label="Photo URL" id="editPhoto" type="url" placeholder="https://…"><span class="tiny">Or use a public HTTPS image link. Uploaded photos are stored with the shared league content.</span></label>
+        <label>Team color<input aria-label="Team color" id="editTeamColor" type="color" value="#e3b23c"></label>
+      </fieldset>
+      <fieldset><legend>Season story</legend>
+        <label>Season<select aria-label="Season" id="editYear"></select></label>
+        <label>Recap<textarea aria-label="Recap" id="editRecap" rows="7" maxlength="16000"></textarea></label>
+        <h3>Awards</h3><div id="editAwards"></div><button id="addAward" type="button" class="quiet-btn">Add an award</button>
+      </fieldset>
+      <div class="form-actions"><button type="submit" class="primary-btn">Preview draft</button><button id="saveDraft" type="button" class="quiet-btn">Save draft</button><button id="downloadDraft" type="button" class="quiet-btn">Download updated content</button><button id="discardDraft" type="button" class="quiet-btn">Discard draft</button></div>
+    </form>
+    <p id="editorStatus" role="status" aria-live="polite"></p>
+    <details class="publish-panel"><summary>Publish to the shared site</summary>
+      <p>Anyone can view this site. Publishing shared photos, profiles, recaps and awards requires a GitHub token with <b>Contents: Read and write</b> permission for <b>brian732/buds-league-history</b>. The token is sent only to GitHub and cleared after each attempt.</p>
+      <form id="publishForm"><label>GitHub access token<input aria-label="GitHub access token" id="publishToken" type="password" autocomplete="off" required></label><button id="publishDraft" type="submit" class="primary-btn">Publish previewed draft</button></form>
+      <p class="tiny">You can also download the updated content and replace <a href="https://github.com/brian732/buds-league-history/edit/main/data/league.json" target="_blank" rel="noopener">league.json on GitHub</a>.</p>
+      <p id="publishStatus" role="status" aria-live="polite"></p>
+    </details>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p id="footNote"></p>
+  <p class="tiny">This is a living document. Personalize the site in My view. Add league stories at the Commissioner’s desk. Standings and records come from ESPN.</p>
+</footer>
+
+<script src="explorer.js?v=20261107-public"></script>
+<script src="preferences.js?v=20261107-public"></script>
+<script src="editor.js?v=20261107-public"></script>
+<script src="app.js?v=20261107-public"></script>
+</body>
+</html>
